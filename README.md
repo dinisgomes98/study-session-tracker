@@ -9,6 +9,10 @@ A command-line study session tracker built with Python.
 - Track study duration
 - Track productivity rating
 - Store sessions in CSV files
+- Weekly performance summaries
+- Overall study analytics
+- Most studied subject tracking
+- Most productive session tracking
 - Input validation for dates and menu options
 
 ## How to Run
@@ -16,6 +20,7 @@ A command-line study session tracker built with Python.
 ```bash
 python study_session_tracker.py
 ```
+
 ## Purpose
 
 This project was built as part of my software engineering learning journey.
@@ -26,6 +31,8 @@ The goal is to practice:
 - Program structure and functions
 - File handling
 - Input validation
-- Working with dates
-- Data organization
+- Working with dates and time
+- Data organization and analytics
+- Refactoring repeated logic
+- Working with lists and dictionaries
 - Git and GitHub workflow
