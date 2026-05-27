@@ -1,5 +1,5 @@
 from session import Session
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def main():
@@ -43,16 +43,22 @@ def main():
                                     
         elif option == 3:
             #get week
+            week_sessions = get_week_sessions(session_file_path)
 
             #check performance
+            get_performance(week_sessions)
 
-            pass
+
 
         
         elif option == 4:
-            #check performance
+            #get all sessions
+            all_sessions = get_all_sessions(session_file_path)
 
-            pass
+            #check performance
+            get_performance(all_sessions)
+
+            
     
 
         elif option == 5:
@@ -149,6 +155,111 @@ def save_session_to_file(session: Session, session_file_path):
 def save_subject_to_file(subject, subject_file_path):
     with open(subject_file_path, "a") as f:
         f.write(f"{subject}\n")
+
+
+def get_week_sessions(session_file_path):
+    today = datetime.today()
+
+    start_of_week = today - timedelta(days=today.weekday())
+    end_of_week = start_of_week + timedelta(days=6)
+
+    sessions_of_week = []
+
+    try:
+        with open(session_file_path, "r") as f:
+
+            for line in f:
+
+                subject, date, time_spent, productivity = line.strip().split(",")
+
+                session_date = datetime.strptime(date, "%d/%m/%Y")
+
+                session = Session(
+                    subject=subject,
+                    date=session_date,
+                    time_spent=int(time_spent),
+                    productivity=int(productivity)
+                )
+
+                if start_of_week.date() <= session.date.date() <= end_of_week.date():
+                    sessions_of_week.append(session)
+
+    except FileNotFoundError:
+        return []
+    
+
+    return sessions_of_week
+
+def get_all_sessions(session_file_path):
+
+    sessions = []
+
+    try:
+        with open(session_file_path, "r") as f:
+
+            for line in f:
+
+                subject, date, time_spent, productivity = line.strip().split(",")
+
+                session_date = datetime.strptime(date, "%d/%m/%Y")
+
+                session = Session(
+                    subject=subject,
+                    date=session_date,
+                    time_spent=int(time_spent),
+                    productivity=int(productivity)
+                )
+
+                sessions.append(session)
+
+    except FileNotFoundError:
+        return []
+
+    return sessions
+
+
+def get_performance(sessions):
+
+    if not sessions:
+        print("No sessions found")
+        return
+
+    time_spent = 0
+    total_productivity = 0
+
+    for session in sessions:
+        time_spent += session.time_spent
+        total_productivity += session.productivity
+
+    avg_productivity = total_productivity / len(sessions)
+
+    time_by_subject = {}
+
+    for session in sessions:
+        key = session.subject
+
+        if key in time_by_subject:
+            time_by_subject[key] += session.time_spent
+        else:
+            time_by_subject[key] = session.time_spent
+    
+    most_time_subject = max(time_by_subject, key=time_by_subject.get)
+
+    best_session = sessions[0]
+
+    for session in sessions[1:]:
+
+        if session.productivity > best_session.productivity:
+            best_session = session
+
+        elif (session.productivity == best_session.productivity and session.time_spent < best_session.time_spent):
+            best_session = session
+
+
+    print(f"Amount of time spent: {time_spent} min\n")
+    print(f"Productivity note: {avg_productivity:.2f}\n")
+    print(f"Subject most studied: {most_time_subject}\n")
+    print(f"Most productive session: {best_session}\n")
 
 
 if __name__ == "__main__":
